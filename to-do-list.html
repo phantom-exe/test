@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colorful To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        input {
+            width: calc(100% - 22px);
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        li {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="todo-input" placeholder="Add new task">
+    <button onclick="addTask()">Add</button>
+    <ul id="todo-list"></ul>
+    <button onclick="clearAll()">Clear All</button>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        const todoList = document.getElementById('todo-list');
+        const input = document.getElementById('todo-input');
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function renderTasks() {
+            todoList.innerHTML = tasks.map((task, i) => `
+                <li class="${task.completed ? 'completed' : ''}" onclick="toggleTask(${i})">
+                    ${task.text}
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteTask(${i})">Delete</button>
+                </li>
+            `).join('');
+        }
+
+        function addTask() {
+            const text = input.value.trim();
+            if (text) {
+                tasks.push({ text, completed: false });
+                input.value = '';
+                saveTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+        }
+
+        function clearAll() {
+            tasks = [];
+            saveTasks();
+        }
+
+        renderTasks();
+    </script>
+</body>
+</html>
